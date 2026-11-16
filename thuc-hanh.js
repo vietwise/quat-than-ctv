@@ -438,6 +438,32 @@ function htmlTuGui() {
 setTimeout(function () { dayBaoCao(); }, 4000);
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') dayBaoCao(); });
 
+// ---------- Đếm mở app hằng ngày: mỗi ngày CTV mở app gửi 1 tín hiệu nhẹ (mã CTV, ngày), không có dữ liệu khách ----------
+// Mở app lúc mất mạng thì ngày đó được giữ lại (tối đa 14 ngày) và gửi bù khi có mạng.
+function ghiMoApp() {
+  var t = homNay(); S.moAppDaGui = S.moAppDaGui || []; S.moAppCho = S.moAppCho || [];
+  if (S.moAppDaGui.indexOf(t) < 0 && S.moAppCho.indexOf(t) < 0) { S.moAppCho.push(t); S.moAppCho = S.moAppCho.slice(-14); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  guiMoApp();
+}
+var DANG_GUI_MO = false;
+function guiMoApp() {
+  if (!BAO_CAO_URL || !navigator.onLine || DANG_GUI_MO) return;
+  if (!S.me.ma && !S.me.ten) return;
+  var cho = (S.moAppCho || []).slice(); if (!cho.length) return;
+  var cai = false; try { cai = typeof laApCai === 'function' && !!laApCai(); } catch (e) {}
+  DANG_GUI_MO = true;
+  fetch(BAO_CAO_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, keepalive: true,
+    body: JSON.stringify({ loai: 'mo-app', ma: S.me.ma || '', ten: S.me.ten || '', ngay: cho, gio: new Date().toTimeString().slice(0, 5), cai: cai ? 1 : 0, phienBan: 'CTV' }) })
+    .then(function () {
+      S.moAppCho = (S.moAppCho || []).filter(function (x) { return cho.indexOf(x) < 0; });
+      S.moAppDaGui = (S.moAppDaGui || []).concat(cho).slice(-14);
+      try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    }).catch(function () {}).then(function () { DANG_GUI_MO = false; });
+}
+setTimeout(ghiMoApp, 3000);
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') ghiMoApp(); });
+window.addEventListener('online', guiMoApp);
+
 // ---------- Nhắc tải báo cáo bán hàng tháng trước từ dashboard CTV ----------
 // Trang "Đơn hàng của tôi" của CTV, lọc sẵn khoảng ngày (dd/mm/yyyy)
 function ddmm(d) { return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
