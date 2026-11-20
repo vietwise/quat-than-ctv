@@ -32,6 +32,8 @@ function canhKB(r, kieu) {
   ds.push({ n: 2, luot: [[b.ketNoi || 'Em chào ' + g + ' ạ. Hôm trước ' + g + ' kể bé nhà mình mới vào lớp 1, mấy hôm nay bé quen trường chưa ' + g + '?',
     B ? 'Ừ chào em. Cũng bình thường thôi, dạo này chị bận lắm.' : 'Quen rồi em. Mà sáng nào chị cũng dậy sớm lo đồ ăn cho bé, mệt ghê.']].concat(B ? [['Dạ, ' + g + ' bận nhất là khúc nào trong ngày ạ?', 'Buổi tối đó em, vừa đi làm về lại lo cơm nước cho bé.', 'Hỏi làm rõ']] : []),
     viSao: B ? 'Khách đáp "bình thường, bận lắm" là cửa còn khép. Đừng nhảy vào giới thiệu. Hỏi một câu nhỏ về chính chữ "bận" để khách kể tiếp, kết nối mới thành.' : 'Hỏi bằng một chi tiết thật mình đã nghe từ khách. Khách thấy mình được nhớ tới, không phải đang bị bán hàng.' });
+  ds[ds.length - 1].luot.push(['Trời, bé nhà em hồi mới vào lớp 1 cũng y vậy ' + g + ', sáng nào em cũng chạy như ma đuổi. (Điểm chung thật: cùng làm mẹ có con mới vào lớp 1.)', 'Vậy hả em! Thì ra nhà ai cũng vậy. (Khách cười, bắt đầu kể nhiều hơn.)', 'Tìm điểm chung']);
+  ds[ds.length - 1].viSao += ' Sau khi nghe khách kể, tìm một điểm chung thật (trực tiếp như cùng làm mẹ, cùng quê; hoặc gián tiếp như người thân mình từng gặp đúng chuyện đó). Điểm chung phá băng rất nhanh, khách cởi mở chia sẻ là đã mở khoá cho nan 3.';
   if (!B) ds.push({ n: 3, luot: [
       [b.hoi || G + ' lo đồ ăn cho bé thì điều gì làm ' + g + ' băn khoăn nhất ạ?', 'Chị sợ nhất rau ngoài chợ còn thuốc. Rửa kỹ mấy cũng không yên tâm, mà bé nhà chị hay bị đau bụng.'],
       ['Bé hay đau bụng vậy, ' + g + ' để ý thường là sau bữa nào ạ?', 'Hay sau bữa tối. Hôm nào ăn rau là y như rằng.', 'Đào thêm một tầng']],

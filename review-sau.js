@@ -226,10 +226,15 @@ function chamSau(r) {
   var N = {};
   var x1 = thay(ds, /muc tieu|cam ket|sau buoi (nay|hom nay|gap)|hom nay em mong|em mong (chi|anh|co)/, 'b');
   N[1] = [tc('Có mục tiêu cam kết rõ: việc khách sẽ làm sau buổi gặp', x1 || (k && k.mucTieu ? { c: 'Phiếu khách: ' + k.mucTieu, i: -1 } : null))];
+  var k2a = thay(ds, /vi sao em|em lam (cung|o|voi)|em la (me|nguoi|ctv)|chuyen cua em|ly do em|hoi (do|truoc) em|nha em/, 'b');
+  var moc3 = hoi.filter(function (x) { return CAU_MO.test(x.b); })[1];
+  var k2b = null; for (var q = 0; q < ds.length && (!moc3 || q < moc3.i); q++) if (ds[q].ai === 'k' && ds[q].c.split(/\s+/).length >= 6) { k2b = ds[q]; break; }
+  var k2c = thay(ds, /\bcung (vay|the|la|co|bi|tung|hay|o|lam|que|tuoi)\b|giong (chi|anh|co|nha|em)|y (vay|nhu|chang)|nha em cung|em cung (la|co|tung|bi|hay|o|lam|que)|cung que|bang tuoi|nhu (nha|ba|me|con|chi|anh) em/, 'b');
   N[2] = [
-    tc('Chào hỏi, hỏi thăm trước khi vào chuyện', thay(ds, /\bchao\b|hoi tham|dao nay|khoe khong|the nao roi|lau qua/, 'b')),
-    tc('Nhắc một chi tiết thật của khách (gia đình, chuyện khách từng kể)', thay(ds, /hom truoc (chi|anh|co)|nghe (chi|anh|co) (ke|noi)|be nha|be (moi|vao|dang)|con (chi|anh|co)|chau nha|lan truoc/, 'b')),
-    tc('Kể ngắn vì sao mình làm Vietwise (chuyện thật của mình)', thay(ds, /vi sao em|em lam (cung|o|voi)|em cung (tung|la me|co con|bi)|chuyen cua em|ly do em/, 'b'))
+    tc('Chào hỏi, hỏi thăm, nhắc chuyện thật của khách', thay(ds, /\bchao\b|hoi tham|dao nay|khoe khong|the nao roi|lau qua|hom truoc (chi|anh|co)|nghe (chi|anh|co) (ke|noi)|lan truoc/, 'b')),
+    tc('Kể câu chuyện thật của mình (mình là ai, vì sao làm Vietwise)', k2a),
+    tc('Lắng nghe câu chuyện của khách trước khi hỏi sâu', k2b),
+    tc('Tìm được điểm chung (trực tiếp hoặc gián tiếp) để phá băng', k2c)
   ];
   N[3] = [
     tc('Có từ 3 câu hỏi mở (thế nào, điều gì, kể thêm…)', mo.length >= 3 ? mo[0] : null, mo.length + ' câu hỏi mở / ' + hoi.length + ' câu hỏi'),
@@ -350,9 +355,10 @@ function maiRiu(r, kq) {
   them(1, '', '(Nói với nhóm trước khi vào vai) Mục tiêu cam kết của em: ' + (k && k.mucTieu ? boCham(k.mucTieu) : g + ' đồng ý ' + (spc ? 'trải nghiệm thử ' + spTen : 'chọn thử một món nhỏ') + ' cho đúng chuyện ' + (td || g + ' đang lo') + ', hoặc hẹn với em một bước tiếp cụ thể') + '.', '(Khách chưa xuất hiện.)',
     x.muc === 'tot' ? 'Ca thật đã có mục tiêu. Giữ thói quen nói to trước nhóm.' : 'Ca thật chưa thấy mục tiêu cam kết. Không có mục tiêu thì buổi gặp trôi theo câu chuyện và dễ nhảy sang bán. Mục tiêu là việc khách sẽ làm, không phải số tiền.');
   x = kq.nan[2];
-  var kn2 = (k && k.ketNoi && !x.tc[1].ok) ? k.ketNoi : (x.tc[0].ok ? x.tc[0].cau.c : 'Em chào ' + g + ' ạ.') + (x.tc[1].ok && x.tc[1].cau !== x.tc[0].cau ? ' ' + x.tc[1].cau.c : x.tc[1].ok ? '' : ' Lần trước ' + g + ' có kể … (nhắc một chi tiết thật của nhà ' + g + '), giờ chuyện đó sao rồi ' + g + '?') + (x.tc[2].ok ? '' : ' Em làm cùng Siêu thị Vietwise vì … (một câu chuyện thật của em).');
-  them(2, '', kn2, dau ? loiKhach(dau) : 'Ừ chào em. Dạo này chị cũng bận lắm.',
-    x.muc === 'tot' ? 'Kết nối đã ổn: có chào hỏi, có chi tiết thật của khách, có chuyện của mình.' : 'Thiếu: ' + x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.toLowerCase(); }).join('; ') + '. Mở bằng một chi tiết thật của khách để khách thấy mình được nhớ tới, không phải đang bị bán hàng.');
+  var kn2 = (x.tc[0].ok ? x.tc[0].cau.c : (k && k.ketNoi) ? k.ketNoi : 'Em chào ' + g + ' ạ.') + (x.tc[1].ok ? '' : ' Em là … , em làm cùng Siêu thị Vietwise vì … (một câu chuyện thật của em).') + ' Còn ' + g + ', dạo này nhà mình thế nào rồi ạ? (Dừng, nghe ' + g + ' kể.) / Khi khách kể xong: ' + (x.tc[3].ok ? x.tc[3].cau.c : 'Ủa, em cũng … (một điểm chung thật với chuyện ' + g + ' vừa kể: cùng làm mẹ, cùng quê, cùng nỗi lo, hoặc người thân em từng gặp đúng chuyện đó).');
+  them(2, '', kn2, dau ? loiKhach(dau) : 'Vậy hả em, nhà chị cũng y vậy luôn. (Khách bắt đầu kể nhiều hơn.)',
+    (x.muc === 'tot' ? 'Kết nối đã ổn: có chuyện của mình, có nghe chuyện khách, có điểm chung. ' : 'Thiếu: ' + x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.charAt(0).toLowerCase() + t.ten.slice(1); }).join('; ') + '. ') + 'Kể chuyện mình, nghe chuyện khách, rồi tìm một điểm chung thật. Điểm chung phá băng rất nhanh, khách cởi mở chia sẻ là đã mở khoá cho nan 3.', 'Tìm điểm chung');
+
   x = kq.nan[3];
   var q3 = td ? G + ' nói ' + loiKhach(dau) + '. ' + G + ' kể thêm cho em, chuyện đó thường xảy ra lúc nào, và lúc đó ' + g + ' thấy sao ạ?' : 'Dạo này điều gì làm ' + g + ' băn khoăn nhất' + (spc ? ' về chuyện ' + g + ' đang tìm ' + spTen : '') + ' ạ?';
   them(3, '', q3, dau2 ? loiKhach(dau2) : dau ? '(Khách kể thêm một chuyện cụ thể trong nhà.)' : '(Khách kể điều mình đang lo.)',
