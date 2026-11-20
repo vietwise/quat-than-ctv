@@ -1,7 +1,7 @@
 // Giao diện Quạt Thần Vietwise CTV: lớp hiển thị nhiều icon, ít chữ.
 // Nạp SAU script chính, ghi đè các trang danh sách. Tính năng và dữ liệu giữ nguyên.
 var IC_NAN = ['🎯', '🤝', '❓', '💞', '🏷️', '💎', '✍️', '🌱', '🪞'];
-var TEN_NGAN = ['Mục tiêu', 'Kết nối', 'Câu hỏi hay', 'Nhu cầu', 'Thương hiệu', 'Sản phẩm', 'Cam kết', 'Sau mua', 'Review'];
+var TEN_NGAN = ['Mục tiêu cam kết', 'Kết nối', 'Câu hỏi hay', 'Nhu cầu', 'Thương hiệu', 'Sản phẩm', 'Cam kết', 'Sau mua', 'Review'];
 
 // Lưới ô icon: [{h|on, ic, t, so, xong, stt, m}]
 function oLuoi(ds, cot) {
