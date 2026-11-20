@@ -250,11 +250,12 @@ function chamSau(r) {
   var a2 = thay(ds, /neu (cu|khong|de) |vai (nam|thang) nua|lau dan|ve lau ve dai|chuyen gi se xay ra|(cu|de) nhu (bay gio|vay)/, 'b');
   var a3 = thay(ds, /neu (moi|ngay|toi|bua|duoc|ca nha|sang|be|chi|anh)|hinh dung|khac di the nao|thi (chi|anh|co) thay (the nao|sao)/, 'b', a2 ? a2.i : null) || thay(ds, /neu (moi|ngay|toi|bua|duoc|ca nha|be)|hinh dung|khac di the nao/, 'b');
   N[4] = [
-    tc('4.1 Tóm nhu cầu bằng chữ của khách và hỏi "đúng không"', a1),
+    tc('4a Liệt kê lại nhu cầu bằng chữ của khách và hỏi "đúng không"', a1),
     tc('Chờ khách tự xác nhận ("đúng", "ừ") rồi mới đi tiếp', xnOk ? xn : null, a1 && !xnOk ? 'Sau câu tóm, chưa thấy khách nói "đúng"' : ''),
-    tc('4.2 Hỏi viễn cảnh tránh xa ("Nếu cứ để như bây giờ…")', a2),
-    tc('4.3 Hỏi viễn cảnh hướng tới ("Nếu mỗi ngày…", "hình dung…")', a3),
-    tc('Đúng thứ tự 4.1 → 4.2 → 4.3', a1 && a2 && a3 && a1.i < a2.i && a2.i < a3.i ? a1 : null)
+    tc('4b Hỏi viễn cảnh tránh xa ("Nếu cứ để như bây giờ…")', a2),
+    tc('4b Hỏi viễn cảnh hướng tới ("Nếu mỗi ngày…", "hình dung…")', a3),
+    tc('Đúng thứ tự: 4a xác nhận → tránh xa trước → hướng tới sau', a1 && a2 && a3 && a1.i < a2.i && a2.i < a3.i ? a1 : null),
+    tc('Cho cảm xúc thời gian: khách trả lời câu 4b trước khi mình sang nan 5', sauDo(ds, a3 || a2, 'k'), a2 || a3 ? 'Sau câu nâng cảm xúc chưa thấy khách trả lời, có thể mình đã nói tiếp quá nhanh' : '')
   ];
   N[5] = [
     tc('Uy tín kiểm chứng được (kiểm nghiệm, nguồn gốc, người làm ra)', thay(ds, /kiem nghiem|chung nhan|giay (phep|to)|ho so|nguon goc|truy xuat|nong dan|nguoi lam ra|nha (cung cap|san xuat)|thuong hieu/, 'b')),
@@ -335,7 +336,7 @@ function tuDauCa(ds) {
     var re = /(hay bị|bị|đau|mỏi|nhức|tê|lo|sợ|ngại|khó)\s+(?:nhất\s+|lắm\s+|là\s+)*([^,;.?!]{2,40})/gi, m;
     while ((m = re.exec(x.c))) {
       var dau = m[1].toLowerCase(), cum = (/^(đau|mỏi|nhức|tê)$/.test(dau) ? dau + ' ' : '') + m[2].trim();
-      cum = cum.replace(/\s+(lắm|quá|ghê|nữa|rồi|em|chị|anh|ạ|nha|nhé)$/i, '').trim();
+      for (var z = 0; z < 4; z++) cum = cum.replace(/\s+(lắm|quá|ghê|nữa|rồi|em|chị|anh|ạ|nha|nhé|luôn)$/i, '').trim();
       if (cum.split(/\s+/).length > 9 || cum.split(/\s+/).length < 2) continue;
       var d = (/bị|đau|mỏi|nhức|tê/.test(dau) ? 3 : /lo|sợ/.test(dau) ? 1 : 0) - cum.split(/\s+/).length * 0.1 + (x.ai === 'k' ? 0.5 : 0);
       if (!best || d > best.d) best = { d: d, t: cum };
@@ -350,7 +351,7 @@ function maiRiu(r, kq) {
   kq.spCa = spc;
   var canh = [];
   function them(n, phu, ban, khachDap, viSao, nhan) {
-    var x = kq.nan[n], cu = phu && n === 3 ? (x.tc[{ '3.1': 1, '3.2': 2, '3.3': 4 }[phu.slice(0, 3)]] || {}).cau : phu && n === 4 ? (phu.indexOf('4.1') === 0 ? x.tc[0] : phu.indexOf('4.2') === 0 ? x.tc[2] : x.tc[3]).cau : x.cau;
+    var x = kq.nan[n], cu = phu && n === 3 ? (x.tc[{ '3.1': 1, '3.2': 2, '3.3': 4 }[phu.slice(0, 3)]] || {}).cau : phu && n === 4 ? (phu.indexOf('4a') === 0 ? x.tc[0] : phu.indexOf('tránh xa') >= 0 ? x.tc[2] : x.tc[3]).cau : x.cau;
     var dap = cu && cu.i >= 0 ? sauDo(ds, cu, 'k') : null;
     canh.push({ n: n, phu: phu || '', muc: x.muc, cu: cu && cu.i >= 0 ? cu.c : '', dap: dap ? dap.c : '', ban: ban, khach: khachDap, viSao: viSao, nhan: nhan || '', tc: phu ? [] : x.tc });
   }
@@ -374,12 +375,16 @@ function maiRiu(r, kq) {
   them(3, '3.3 Chạm mong muốn chân thật', 'Vậy với ' + g + ', điều ' + g + ' thật sự mong là gì ạ? (Dừng, chờ khách nói.)', mong ? loiKhach(mong) : '(Khách nói ra mong muốn chân thật của mình.)',
     (mong ? 'Ca thật khách đã nói ra mong muốn. ' : 'Ca thật chưa thấy khách nói ra mong muốn của mình. ') + 'Được nghe sâu thì khách dễ chia sẻ mong muốn chân thật. Mong muốn đó bằng chính chữ của khách là cửa mở cho nan 4: câu tóm 4.1 dùng lại đúng chữ này.', 'Mở cửa nan 4');
   x = kq.nan[4];
-  them(4, '4.1 Khách tự xác nhận nhu cầu', 'Em nghe ' + g + ' nói' + (dau ? ' ' + loiKhach(dau) : ' vậy') + ', vậy điều ' + g + ' mong nhất là ' + nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Đúng rồi em.',
-    (x.tc[0].ok ? (x.tc[1].ok ? 'Ca thật đã tóm và khách đã xác nhận. ' : 'Ca thật có tóm, nhưng chưa thấy khách nói "đúng" trước khi mình đi tiếp. ') : 'Ca thật chưa có câu tóm nhu cầu. ') + 'Tóm bằng chính chữ khách, rồi im lặng chờ khách tự nói "đúng". Chưa có chữ "đúng" thì chưa sang câu 2.', 'Chờ xác nhận');
-  them(4, '4.2 Viễn cảnh tránh xa', 'Nếu cứ để như bây giờ thêm vài năm nữa' + (td ? ', chuyện ' + td + ' vẫn còn đó' : '') + ', ' + g + ' nghĩ nhà mình sẽ ra sao ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', '(Khách tự nói ra cái giá của việc không thay đổi.)',
-    (x.tc[2].ok ? 'Ca thật đã có câu viễn cảnh tránh xa. ' : 'Ca thật thiếu câu viễn cảnh tránh xa. ') + 'Đây là câu hỏi để khách tự hình dung, không phải lời dọa. Chỉ hỏi sau khi khách đã xác nhận nhu cầu.', 'Chờ khách trả lời');
-  them(4, '4.3 Viễn cảnh hướng tới', 'Còn nếu ' + (k && (k.nhuCau || []).length ? nc : td ? g + ' được yên tâm, chuyện ' + td + ' không còn làm ' + g + ' lo nữa' : nc) + ', ' + g + ' hình dung một ngày của nhà mình sẽ khác đi thế nào ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', '(Gật đầu) Ừ, vậy thì tốt quá em.',
-    (x.tc[3].ok ? 'Ca thật đã có câu viễn cảnh hướng tới. ' : 'Ca thật thiếu câu viễn cảnh hướng tới. ') + 'Kết nan 4 bằng hy vọng. Khách đồng tình ở đây là đã ngầm chốt; nan 5 đến 7 chỉ còn giúp khách giao dịch.', 'Chờ khách trả lời');
+  var dsNc = [nc], mong4 = kq.nan[3].tc[4] && kq.nan[3].tc[4].cau;
+  var moc4 = Math.min.apply(null, [0, 2, 3].map(function (q) { var c = x.tc[q].cau; return c && c.i >= 0 ? c.i : 1e9; }));
+  if (mong4 && mong4.i < moc4) dsNc.push(ngan(mong4.c.replace(/^(thì|dạ|ừ|vâng)\s+/i, '').replace(/^(chị|anh|em|cô|bác|mình)\s+(chỉ\s+)?/i, ''), 14));
+  kq.dau.filter(function (d) { return d.i < moc4 && /(^|\s)(lo|sợ|ngại|mệt|bị|khó|đau|mỏi|nhức|băn khoăn)\s/i.test(d.c); }).slice(1, 3).forEach(function (d) { var t = tuDau(d); if (t && dsNc.length < 3 && !dsNc.some(function (y) { return bd(y).indexOf(bd(t)) >= 0; })) dsNc.push('không còn lo chuyện ' + t); });
+  them(4, '4a · Thống nhất nhu cầu, chờ khách xác nhận', x.tc[0].ok && x.tc[1].ok ? x.tc[0].cau.c + ' (Dừng, chờ khách xác nhận từng ý.)' : 'Em tóm lại xem em hiểu đúng chưa nha ' + g + ': ' + (dsNc.length > 1 ? dsNc.map(function (t, i) { return '①②③'.charAt(i) + ' ' + t; }).join(', ') + '. Đúng là những điều ' + g + ' đang cần không ạ?' : 'điều ' + g + ' mong nhất là ' + nc + ', đúng không ' + g + '?') + ' (Dừng, chờ khách xác nhận từng ý.)', 'Đúng rồi em, đúng vậy đó.',
+    (x.tc[0].ok ? (x.tc[1].ok ? 'Ca thật đã tóm và khách đã xác nhận. ' : 'Ca thật có tóm, nhưng chưa thấy khách nói "đúng" trước khi mình đi tiếp. ') : 'Ca thật chưa có câu liệt kê lại nhu cầu. ') + 'Liệt kê lại những nhu cầu khách vừa nói, bằng chính chữ của khách, rồi im lặng chờ khách xác nhận đúng đó là nhu cầu của họ. Chưa có chữ "đúng" của khách thì chưa sang 4b.', 'Chờ xác nhận');
+  them(4, '4b · Viễn cảnh tránh xa (hỏi trước)', 'Nếu cứ để như bây giờ thêm vài năm nữa' + (td ? ', chuyện ' + td + ' vẫn còn đó' : '') + ', ' + g + ' nghĩ nhà mình sẽ ra sao ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được. Im lặng vài nhịp cho cảm xúc lắng lại.)', '(Khách tự nói ra cái giá của việc không thay đổi.)',
+    (x.tc[2].ok ? 'Ca thật đã có câu viễn cảnh tránh xa. ' : 'Ca thật thiếu câu viễn cảnh tránh xa. ') + '4b nâng cao cảm xúc là phần cực kỳ quan trọng. Câu tránh xa luôn hỏi TRƯỚC. Đây là câu hỏi để khách tự hình dung, không phải lời dọa, và chỉ hỏi sau khi khách đã xác nhận nhu cầu ở 4a.', 'Chờ khách trả lời');
+  them(4, '4b · Viễn cảnh hướng tới (hỏi sau)', 'Còn nếu ' + (k && (k.nhuCau || []).length ? nc : td ? g + ' được yên tâm, chuyện ' + td + ' không còn làm ' + g + ' lo nữa' : nc) + ', ' + g + ' hình dung một ngày của nhà mình sẽ khác đi thế nào ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được. Im lặng một nhịp dài, chưa nói gì thêm.)', '(Gật đầu) Ừ, vậy thì tốt quá em.',
+    (x.tc[3].ok ? 'Ca thật đã có câu viễn cảnh hướng tới. ' : 'Ca thật thiếu câu viễn cảnh hướng tới. ') + 'Câu hướng tới hỏi SAU để nan 4 kết bằng hy vọng. Cần thời gian để cảm xúc được ghi nhận và thúc đẩy thành động lực lựa chọn mua, nên đừng vội nói tiếp. ' + (x.tc[5].ok ? '' : 'Ca thật: ' + (x.tc[5].ghi || 'chưa có câu 4b') + '. ') + 'Khách đồng tình ở đây là đã ngầm chốt; lúc đó mới sang nan 5.', 'Chờ khách trả lời');
   x = kq.nan[5];
   them(5, '', x.tc[0].ok && x.tc[1].ok ? x.tc[1].cau.c : (k && k.thuongHieu) ? k.thuongHieu : (spc ? G + ' ơi, ' + spTen + ' bên em có nguồn gốc rõ ràng: … (nêu đúng giấy tờ, người làm ra, nơi sản xuất có thật). ' : 'Siêu thị Vietwise chỉ nhận hàng có hồ sơ rõ ràng, ' + g + ' xem được nguồn gốc từng món. ') + 'Có một khách của em cũng ' + (td ? 'từng ' + td : 'có hoàn cảnh giống ' + g) + ' (kể một ca thật bạn biết), giờ đã yên tâm hơn nhiều.', 'Vậy à, vậy thì chị yên tâm hơn.',
     'Thiếu: ' + (x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.toLowerCase(); }).join('; ') || 'không thiếu gì, giữ nhé') + '. Uy tín phải kiểm chứng được, và chuyện kể phải là chuyện thật.');
@@ -446,7 +451,7 @@ function chuMaiRiu(id) {
 }
 function yeuCauAIReview(id) {
   var r = S.review.filter(function (x) { return x.id === id; })[0];
-  return 'Tôi là cộng tác viên Siêu thị Vietwise, đang tập Quạt Thần (Action Selling 9 nan: 1 Mục tiêu cam kết, 2 Kết nối, 3 Đặt câu hỏi hay, 4 Thống nhất nhu cầu và nâng cảm xúc gồm 3 câu theo thứ tự: 4.1 khách tự xác nhận nhu cầu, 4.2 viễn cảnh tránh xa, 4.3 viễn cảnh hướng tới, mỗi câu dừng chờ khách trả lời hoặc đồng tình; 5 Giới thiệu thương hiệu, 6 Giới thiệu sản phẩm theo TFBR, 7 Chốt, 8 Sau mua, 9 Review). Khách đồng tình ở nan 4 là đã ngầm chốt, nan 5 đến 7 chỉ giúp khách giao dịch.\n\nDưới đây là toàn bộ tư liệu một buổi tư vấn (lời kể, chat, bản chép lời). Hãy:\n1. Chấm từng nan: tốt, chưa đủ, bỏ qua. Trích nguyên câu làm bằng chứng.\n2. Chỉ ra chỗ nhảy bước, chỗ mình nói nhiều hơn khách, lời hứa công dụng hay lời ép mua nếu có.\n3. Viết kịch bản "mài rìu" cho từng nan (nan 4 đủ 3 câu), dùng chính chữ khách đã nói, kèm một câu giải thích vì sao, để team đóng vai tập lại tình huống thật.\nKhông bịa thêm lời khách, không hứa công dụng sản phẩm.\n\n---\n' + nguonReview(r) + (r.nguyenVan ? '\nKhách nói nguyên văn: ' + r.nguyenVan : '');
+  return 'Tôi là cộng tác viên Siêu thị Vietwise, đang tập Quạt Thần (Action Selling 9 nan: 1 Mục tiêu cam kết, 2 Kết nối, 3 Đặt câu hỏi hay, 4 Thống nhất nhu cầu và nâng cao cảm xúc: 4a liệt kê lại nhu cầu bằng chữ khách và chờ khách xác nhận, 4b nâng cao cảm xúc bằng câu viễn cảnh tránh xa hỏi trước rồi câu viễn cảnh hướng tới hỏi sau, mỗi câu dừng chờ khách trả lời hoặc đồng tình, cho cảm xúc thời gian thành động lực mua; 5 Giới thiệu thương hiệu, 6 Giới thiệu sản phẩm theo TFBR, 7 Chốt, 8 Sau mua, 9 Review). Khách đồng tình ở nan 4 là đã ngầm chốt, nan 5 đến 7 chỉ giúp khách giao dịch.\n\nDưới đây là toàn bộ tư liệu một buổi tư vấn (lời kể, chat, bản chép lời). Hãy:\n1. Chấm từng nan: tốt, chưa đủ, bỏ qua. Trích nguyên câu làm bằng chứng.\n2. Chỉ ra chỗ nhảy bước, chỗ mình nói nhiều hơn khách, lời hứa công dụng hay lời ép mua nếu có.\n3. Viết kịch bản "mài rìu" cho từng nan (nan 4 đủ 3 câu), dùng chính chữ khách đã nói, kèm một câu giải thích vì sao, để team đóng vai tập lại tình huống thật.\nKhông bịa thêm lời khách, không hứa công dụng sản phẩm.\n\n---\n' + nguonReview(r) + (r.nguyenVan ? '\nKhách nói nguyên văn: ' + r.nguyenVan : '');
 }
 
 // ================= GIAO DIỆN =================

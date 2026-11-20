@@ -45,18 +45,18 @@ function canhKB(r, kieu) {
     viSao: 'Khách nói chung chung ("bình thường", "lành hơn") thì chưa có nhu cầu để thống nhất. Hỏi lại đúng chữ khách vừa dùng, và hỏi tới khi khách kể ra một chuyện cụ thể đã xảy ra trong nhà.' });
   ds[ds.length - 1].viSao += ' Đây là ĐẶT CÂU HỎI SÂU CHUỖI TỪ KHOÁ: nghe từ khoá khách vừa nói rồi hỏi tiếp trên đúng từ khoá đó. Khách thấy mình được nghe sâu, được thấu hiểu, nên dễ chia sẻ mong muốn chân thật, mở cửa cho nan 4.';
   // Nan 4 · ba câu
-  ds.push({ n: 4, phu: '4.1 Khách tự xác nhận nhu cầu', luot: B ? [
+  ds.push({ n: 4, phu: '4a · Thống nhất nhu cầu, chờ khách xác nhận', luot: B ? [
       ['Em nghe ' + g + ' kể vậy, điều ' + g + ' mong nhất là ' + b.nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Ừ… chắc vậy. Mà chị cũng chưa biết nữa.'],
       ['Dạ, ' + g + ' còn chưa chắc ở chỗ nào ạ? Là chưa chắc bé đau bụng vì rau, hay chưa chắc có cách nào tốt hơn cách ' + g + ' đang làm?', 'Chưa chắc có cách nào tốt hơn. Chị rửa kỹ rồi mà vẫn lo.', 'Hỏi làm rõ'],
       ['Vậy điều ' + g + ' cần là một cách rửa rau làm ' + g + ' thật sự yên tâm, để ' + b.nc + ', đúng không ạ? (Dừng, chờ khách xác nhận.)', 'Đúng. Cái đó thì đúng em.', 'Xác nhận lại']
     ] : [['Em nghe ' + g + ' nói vậy, điều ' + g + ' mong nhất là ' + b.nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Đúng rồi em, chị chỉ cần vậy thôi.']],
     viSao: (B ? '"Chắc vậy" chưa phải là xác nhận. Hỏi đúng chỗ khách còn ngập ngừng, rồi tóm lại lần nữa, tới khi khách nói "đúng" bằng giọng chắc. ' : '') + 'Câu 1 của nan 4. Tóm lại bằng chính chữ của khách, rồi dừng lại chờ khách tự nói "đúng". Chưa có chữ "đúng" của khách thì chưa sang câu 2. Nhu cầu do khách tự xác nhận thì khách tự giữ lấy nó; mình không phải thuyết phục, chỉ cần đi cùng.' });
-  ds.push({ n: 4, phu: '4.2 Viễn cảnh tránh xa', luot: B ? [
+  ds.push({ n: 4, phu: '4b · Viễn cảnh tránh xa (hỏi trước)', luot: B ? [
       ['Nếu cứ để như bây giờ thêm vài năm nữa, ' + g + ' nghĩ chuyện gì sẽ xảy ra với bữa ăn của bé ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', 'Chị cũng không nghĩ xa vậy đâu em.'],
       ['Dạ, mình nghĩ gần thôi ' + g + '. Cứ vài hôm bé lại đau bụng một lần như bây giờ, một năm nữa thì sao ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', 'Thì… chắc bé sợ ăn rau luôn. Nghĩ tới là chị thấy lo.', 'Hỏi làm rõ']
     ] : [['Nếu cứ để như bây giờ thêm vài năm, bữa nào ' + g + ' cũng phải ngại rau, ' + g + ' nghĩ chuyện gì sẽ xảy ra ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', 'Thì bé sợ ăn rau, rồi thiếu chất. Nghĩ tới là chị thấy lo.']],
     viSao: (B ? 'Khi khách né viễn cảnh, kéo nó lại gần và cụ thể: một chuyện đang xảy ra, trong một năm tới. ' : '') + 'Câu 2 của nan 4, chỉ hỏi sau khi khách đã xác nhận nhu cầu. Viễn cảnh tránh xa giúp khách tự thấy cái giá của việc không thay đổi. Đây là câu hỏi, không phải lời dọa: khách tự hình dung, mình không nói thay, không phóng đại. Hỏi xong thì im, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng đủ, không ép khách nói dài.' });
-  ds.push({ n: 4, phu: '4.3 Viễn cảnh hướng tới', luot: B ? [
+  ds.push({ n: 4, phu: '4b · Viễn cảnh hướng tới (hỏi sau)', luot: B ? [
       ['Còn nếu tối nào ' + g + ' cũng yên tâm bày rau lên mâm, thì ' + g + ' thấy sao ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', 'Thì đỡ lo.'],
       ['Dạ, đỡ lo rồi thì buổi tối của ' + g + ' sẽ khác đi thế nào ạ?', 'Chị được ngồi ăn với con, không phải canh từng miếng rau nữa.', 'Hỏi làm rõ']
     ] : [['Còn nếu tối nào ' + g + ' cũng yên tâm bày rau lên mâm, bé ăn ngon, thì ' + g + ' thấy cả nhà mình khác đi thế nào ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', '(Gật đầu) Ừ, vậy thì tốt quá em.']],
@@ -98,7 +98,7 @@ function htmlKichBan(r) {
     var b = NAN[c.n - 1], x = kq.nan[c.n], that = r.buoc[c.n] === 'tot' && x && x.i < 999 && !c.phu;
     var ky = c.n === 4 || r.buoc[c.n] === 'chua' || r.buoc[c.n] === 'bo';
     var o = '<div class="the canh-kb' + (ky ? ' ky' : '') + '"><b>' + (ky ? '★ ' : '') + 'Nan ' + c.n + ' · ' + esc(c.phu || b.ten) + '</b>';
-    if (c.phu && c.phu.indexOf('4.1') === 0) o += '<div class="mo" style="margin-top:4px">Thứ tự nan 4: ① tóm nhu cầu, <b>chờ khách xác nhận</b> → ② hỏi viễn cảnh tránh xa, <b>chờ khách trả lời</b> → ③ hỏi viễn cảnh hướng tới, <b>chờ khách trả lời</b>. Khách chỉ gật đầu đồng tình cũng được.</div>';
+    if (c.phu && c.phu.indexOf('4a') === 0) o += '<div class="mo" style="margin-top:4px">Thứ tự nan 4: <b>4a</b> liệt kê lại nhu cầu, <b>chờ khách xác nhận</b> → <b>4b</b> nâng cao cảm xúc: hỏi viễn cảnh tránh xa TRƯỚC, <b>chờ khách trả lời</b> → hỏi viễn cảnh hướng tới SAU, <b>chờ khách trả lời</b>. Khách chỉ gật đầu đồng tình cũng được. Im lặng đủ lâu cho cảm xúc thành động lực, rồi mới sang nan 5.</div>';
     if (that) o += '<div class="mo" style="margin-top:4px">Lời thật của bạn trong ca này: “' + esc(x.cau) + '”</div>';
     o += c.luot.map(function (l) { return '<div class="vai"><i>Người bán' + (l[2] ? ' <span class="kb-nhan">' + esc(l[2]) + '</span>' : '') + '</i>' + esc(l[0]) + '</div><div class="vai kh"><i>Khách</i>' + esc(l[1]) + '</div>'; }).join('');
     o += '<details class="kb-visao"><summary>💡 Vì sao cần câu này?</summary><p>' + esc(c.viSao) + '</p></details>';
