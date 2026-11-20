@@ -43,6 +43,7 @@ function canhKB(r, kieu) {
       ['Dạ, với ' + g + ', "lành hơn" là như thế nào ạ? ' + G + ' đang để ý chuyện gì nhất trong bữa ăn của bé?', 'À… chắc là rau. Chị nghe nói rau ngoài chợ hay còn thuốc.', 'Hỏi làm rõ'],
       ['' + G + ' nghe vậy rồi, nhà mình đã gặp chuyện gì chưa ạ?', 'Bé hay đau bụng, mà chị cũng không chắc có phải do rau không.', 'Hỏi làm rõ']],
     viSao: 'Khách nói chung chung ("bình thường", "lành hơn") thì chưa có nhu cầu để thống nhất. Hỏi lại đúng chữ khách vừa dùng, và hỏi tới khi khách kể ra một chuyện cụ thể đã xảy ra trong nhà.' });
+  ds[ds.length - 1].viSao += ' Đây là ĐẶT CÂU HỎI SÂU CHUỖI TỪ KHOÁ: nghe từ khoá khách vừa nói rồi hỏi tiếp trên đúng từ khoá đó. Khách thấy mình được nghe sâu, được thấu hiểu, nên dễ chia sẻ mong muốn chân thật, mở cửa cho nan 4.';
   // Nan 4 · ba câu
   ds.push({ n: 4, phu: '4.1 Khách tự xác nhận nhu cầu', luot: B ? [
       ['Em nghe ' + g + ' kể vậy, điều ' + g + ' mong nhất là ' + b.nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Ừ… chắc vậy. Mà chị cũng chưa biết nữa.'],

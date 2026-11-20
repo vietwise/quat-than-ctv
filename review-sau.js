@@ -236,10 +236,14 @@ function chamSau(r) {
     tc('Lắng nghe câu chuyện của khách trước khi hỏi sâu', k2b),
     tc('Tìm được điểm chung (trực tiếp hoặc gián tiếp) để phá băng', k2c)
   ];
+  var chuoi = 0; hoi.forEach(function (q) { var tr = null; for (var j = q.i - 1; j >= 0 && j >= q.i - 3; j--) if (ds[j].ai === 'k') { tr = ds[j]; break; } if (!tr) return; var a = tuChinh(tr.b), b = tuChinh(q.b); if (a.some(function (w) { return b.indexOf(w) >= 0; })) chuoi++; });
+  var mongThat = ds.filter(function (x) { return x.ai === 'k' && /\b(muon|mong|uoc|chi can|chi chi|cai chi can)\b/.test(x.b) && !RE_TU_CHOI.some(function (t) { return t[1].test(x.b); }); })[0] || null;
   N[3] = [
     tc('Có từ 3 câu hỏi mở (thế nào, điều gì, kể thêm…)', mo.length >= 3 ? mo[0] : null, mo.length + ' câu hỏi mở / ' + hoi.length + ' câu hỏi'),
-    tc('Đào thêm một tầng vào đúng chữ khách vừa nói', dao),
-    tc('Khách nói nhiều hơn mình (khách chiếm từ 50% số chữ)', kq.tyLe != null && kq.tyLe >= 50 ? { c: 'Khách nói ' + kq.tyLe + '% số chữ', i: -1 } : null, kq.tyLe != null ? 'Khách nói ' + kq.tyLe + '% số chữ' : 'Chưa tách được lời ai nói, ghi "Khách:" và "Mình:" đầu mỗi lượt')
+    tc('Nghe từ khoá: câu hỏi sau dựa trên đúng chữ khách vừa nói', dao),
+    tc('Hỏi sâu thành chuỗi từ khoá (ít nhất 2 câu nối tiếp)', chuoi >= 2 ? dao : null, chuoi + ' câu hỏi nối theo từ khoá của khách'),
+    tc('Khách nói nhiều hơn mình (khách chiếm từ 50% số chữ)', kq.tyLe != null && kq.tyLe >= 50 ? { c: 'Khách nói ' + kq.tyLe + '% số chữ', i: -1 } : null, kq.tyLe != null ? 'Khách nói ' + kq.tyLe + '% số chữ' : 'Chưa tách được lời ai nói, ghi "Khách:" và "Mình:" đầu mỗi lượt'),
+    tc('Khách chia sẻ mong muốn chân thật (mở cửa nan 4)', mongThat)
   ];
   var a1 = thay(ds, /dung khong|phai khong|co dung (khong|vay)|vay la (chi|anh|co)|dieu (chi|anh|co) (mong|can|lo|muon) nhat|em hieu (la|dung)|tom lai/, 'b');
   var xn = a1 && sauDo(ds, a1, 'k'), xnOk = xn && /\b(dung|u|vang|da|phai|chuan|chinh xac|that)\b/.test(xn.b);
@@ -346,7 +350,7 @@ function maiRiu(r, kq) {
   kq.spCa = spc;
   var canh = [];
   function them(n, phu, ban, khachDap, viSao, nhan) {
-    var x = kq.nan[n], cu = phu && n === 4 ? (phu.indexOf('4.1') === 0 ? x.tc[0] : phu.indexOf('4.2') === 0 ? x.tc[2] : x.tc[3]).cau : x.cau;
+    var x = kq.nan[n], cu = phu && n === 3 ? (x.tc[{ '3.1': 1, '3.2': 2, '3.3': 4 }[phu.slice(0, 3)]] || {}).cau : phu && n === 4 ? (phu.indexOf('4.1') === 0 ? x.tc[0] : phu.indexOf('4.2') === 0 ? x.tc[2] : x.tc[3]).cau : x.cau;
     var dap = cu && cu.i >= 0 ? sauDo(ds, cu, 'k') : null;
     canh.push({ n: n, phu: phu || '', muc: x.muc, cu: cu && cu.i >= 0 ? cu.c : '', dap: dap ? dap.c : '', ban: ban, khach: khachDap, viSao: viSao, nhan: nhan || '', tc: phu ? [] : x.tc });
   }
@@ -360,9 +364,15 @@ function maiRiu(r, kq) {
     (x.muc === 'tot' ? 'Kết nối đã ổn: có chuyện của mình, có nghe chuyện khách, có điểm chung. ' : 'Thiếu: ' + x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.charAt(0).toLowerCase() + t.ten.slice(1); }).join('; ') + '. ') + 'Kể chuyện mình, nghe chuyện khách, rồi tìm một điểm chung thật. Điểm chung phá băng rất nhanh, khách cởi mở chia sẻ là đã mở khoá cho nan 3.', 'Tìm điểm chung');
 
   x = kq.nan[3];
-  var q3 = td ? G + ' nói ' + loiKhach(dau) + '. ' + G + ' kể thêm cho em, chuyện đó thường xảy ra lúc nào, và lúc đó ' + g + ' thấy sao ạ?' : 'Dạo này điều gì làm ' + g + ' băn khoăn nhất' + (spc ? ' về chuyện ' + g + ' đang tìm ' + spTen : '') + ' ạ?';
-  them(3, '', q3, dau2 ? loiKhach(dau2) : dau ? '(Khách kể thêm một chuyện cụ thể trong nhà.)' : '(Khách kể điều mình đang lo.)',
-    (x.tc[0].ghi ? 'Ca thật: ' + x.tc[0].ghi + '. ' : '') + (x.tc[1].ok ? 'Bạn đã đào thêm một tầng, tốt. ' : 'Chưa thấy câu hỏi đào thêm vào đúng chữ khách vừa nói. ') + 'Bản mài rìu nhặt lại chính chữ khách đã nói rồi hỏi sâu một tầng, để nhu cầu là của khách chứ không phải mình đoán.', 'Đào thêm một tầng');
+  var kw1 = td || (dau ? tuDau(dau) : ''), kw2 = dau2 ? tuDau(dau2) : '', mong = x.tc[4].cau;
+  var ghi3 = (x.tc[0].ghi ? 'Ca thật: ' + x.tc[0].ghi + '; ' + x.tc[2].ghi + '. ' : '');
+  them(3, '3.1 Nghe từ khoá', dau ? G + ' vừa nói ' + loiKhach(dau) + '. ' + G + ' kể thêm cho em về chuyện ' + (kw1 || 'đó') + ' được không ạ? (Dừng, nghe, bắt từ khoá mới trong câu trả lời.)' : 'Dạo này điều gì làm ' + g + ' băn khoăn nhất' + (spc ? ' về chuyện ' + g + ' đang tìm ' + spTen : '') + ' ạ? (Dừng, nghe, bắt từ khoá trong câu trả lời.)',
+    dau2 ? loiKhach(dau2) : '(Khách kể thêm, nói ra một từ khoá mới.)',
+    ghi3 + (x.tc[1].ok ? 'Ca thật đã có câu hỏi dựa trên chữ khách, tốt. ' : 'Ca thật chưa thấy câu hỏi nào dựa trên đúng chữ khách vừa nói. ') + 'Nghe từ khoá là nghe chữ khách nhấn mạnh, lặp lại, nói kèm cảm xúc. Câu hỏi đầu tiên nhặt lại đúng chữ đó.', 'Nghe từ khoá');
+  them(3, '3.2 Hỏi tiếp trên từ khoá vừa nghe', 'Dạ, ' + g + ' nói ' + (kw2 ? '“' + kw2 + '”' : '“…” (đúng từ khoá khách vừa nói)') + '. Lúc đó ' + g + ' thấy thế nào ạ? ' + G + ' lo nhất ở chỗ nào?', '(Khách kể cảm xúc thật, thêm một từ khoá nữa.)',
+    (x.tc[2].ok ? 'Ca thật đã hỏi nối được thành chuỗi. ' : 'Ca thật chưa nối được chuỗi từ khoá. ') + 'Mỗi câu trả lời cho một từ khoá mới, câu hỏi kế tiếp đi sâu vào đúng từ khoá đó: ĐẶT CÂU HỎI SÂU CHUỖI TỪ KHOÁ. Khách cảm nhận được mình nghe sâu, được thấu hiểu.', 'Chuỗi từ khoá');
+  them(3, '3.3 Chạm mong muốn chân thật', 'Vậy với ' + g + ', điều ' + g + ' thật sự mong là gì ạ? (Dừng, chờ khách nói.)', mong ? loiKhach(mong) : '(Khách nói ra mong muốn chân thật của mình.)',
+    (mong ? 'Ca thật khách đã nói ra mong muốn. ' : 'Ca thật chưa thấy khách nói ra mong muốn của mình. ') + 'Được nghe sâu thì khách dễ chia sẻ mong muốn chân thật. Mong muốn đó bằng chính chữ của khách là cửa mở cho nan 4: câu tóm 4.1 dùng lại đúng chữ này.', 'Mở cửa nan 4');
   x = kq.nan[4];
   them(4, '4.1 Khách tự xác nhận nhu cầu', 'Em nghe ' + g + ' nói' + (dau ? ' ' + loiKhach(dau) : ' vậy') + ', vậy điều ' + g + ' mong nhất là ' + nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Đúng rồi em.',
     (x.tc[0].ok ? (x.tc[1].ok ? 'Ca thật đã tóm và khách đã xác nhận. ' : 'Ca thật có tóm, nhưng chưa thấy khách nói "đúng" trước khi mình đi tiếp. ') : 'Ca thật chưa có câu tóm nhu cầu. ') + 'Tóm bằng chính chữ khách, rồi im lặng chờ khách tự nói "đúng". Chưa có chữ "đúng" thì chưa sang câu 2.', 'Chờ xác nhận');
