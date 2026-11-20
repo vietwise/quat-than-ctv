@@ -5,7 +5,7 @@
 //  2. Chấm 9 nan theo từng tiêu chí, trích câu thật làm bằng chứng, soi thứ tự nan.
 //  3. Kịch bản mài rìu: mỗi nan một cảnh, dùng chính chữ khách đã nói, có nút tập nói và vì sao.
 // Không gửi tư liệu đi đâu. Chấm theo quy tắc, không phải AI: chỉ là gợi ý cho người quan sát.
-// Ghi đè htmlDanhGia (thuc-hanh.js), V.suaReview và V.review (index.html).
+// Ghi đè htmlDanhGia (thuc-hanh.js) và V.review (index.html); htmlTuLieu là ô tải tư liệu của Phần 1.
 
 var PDF_DIR = new URL('pdf/', location.href).href, STT_DIR = new URL('stt/', location.href).href;
 var DOC = { dang: false, tin: '' };
@@ -441,7 +441,7 @@ function htmlMaiRiu(r, kq) {
     return o + '<details class="kb-visao"><summary>💡 Vì sao mài lại thế này?</summary><p>' + esc(c.viSao) + '</p></details><div class="mo">Người quan sát soi: ' + esc(b.thu) + '</div></div>';
   }).join('');
   h += '<div class="hang"><a class="nut" href="#review/tapm/' + r.id + '">▶ Tập bản mài rìu từng câu</a><button class="nut phu" onclick="chep(chuMaiRiu(\'' + r.id + '\'))">Sao chép bản mài rìu cho team</button></div>';
-  return h + '<p class="mo" style="margin-top:14px">Muốn tập thêm kỹ năng chung, mở hai kịch bản mẫu A, B bên dưới (ca ví dụ, không phải ca của bạn).</p>';
+  return h;
 }
 function chuMaiRiu(id) {
   var r = S.review.filter(function (x) { return x.id === id; })[0], cs = maiRiu(r, chamSau(r));
@@ -454,27 +454,22 @@ function yeuCauAIReview(id) {
   return 'Tôi là cộng tác viên Siêu thị Vietwise, đang tập Quạt Thần (Action Selling 9 nan: 1 Mục tiêu cam kết, 2 Kết nối, 3 Đặt câu hỏi hay, 4 Thống nhất nhu cầu và nâng cao cảm xúc: 4a liệt kê lại nhu cầu bằng chữ khách và chờ khách xác nhận, 4b nâng cao cảm xúc bằng câu viễn cảnh tránh xa hỏi trước rồi câu viễn cảnh hướng tới hỏi sau, mỗi câu dừng chờ khách trả lời hoặc đồng tình, cho cảm xúc thời gian thành động lực mua; 5 Giới thiệu thương hiệu, 6 Giới thiệu sản phẩm theo TFBR, 7 Chốt, 8 Sau mua, 9 Review). Khách đồng tình ở nan 4 là đã ngầm chốt, nan 5 đến 7 chỉ giúp khách giao dịch.\n\nDưới đây là toàn bộ tư liệu một buổi tư vấn (lời kể, chat, bản chép lời). Hãy:\n1. Chấm từng nan: tốt, chưa đủ, bỏ qua. Trích nguyên câu làm bằng chứng.\n2. Chỉ ra chỗ nhảy bước, chỗ mình nói nhiều hơn khách, lời hứa công dụng hay lời ép mua nếu có.\n3. Viết kịch bản "mài rìu" cho từng nan (nan 4 đủ 3 câu), dùng chính chữ khách đã nói, kèm một câu giải thích vì sao, để team đóng vai tập lại tình huống thật.\nKhông bịa thêm lời khách, không hứa công dụng sản phẩm.\n\n---\n' + nguonReview(r) + (r.nguyenVan ? '\nKhách nói nguyên văn: ' + r.nguyenVan : '');
 }
 
+// Ô tải tư liệu duy nhất của Phần 1 (index.html V.suaReview gọi).
+function htmlTuLieu() {
+  var o = '<div class="the" style="border-color:var(--kim);margin-top:12px"><b>📎 Tư liệu buổi gặp</b><p class="mo" style="margin:4px 0 8px">Ảnh chụp chat, ghi âm, video, PDF, Word, file chữ. Chọn được nhiều file một lần. App đọc hết chữ ngay trên máy, tự chép lời ghi âm, video, rồi ở Phần 3 chấm sát từng nan và viết kịch bản mài rìu.</p>';
+  o += '<div class="hang"><label class="nut rong" style="margin:0;flex:1">📎 Chọn tư liệu<input type="file" class="an" multiple accept="image/*,audio/*,video/*,.pdf,.docx,.doc,.txt,.md,.srt,.vtt,.m4a,.mp3,.wav,.aac,.ogg,.opus,.amr,.mp4,.mov,.m4v,.webm,application/pdf" onchange="docTuLieu(this.files)"></label><button class="nut ' + (REC ? '' : 'phu ') + '" style="margin:0" onclick="thuAm()">' + (REC ? '■ Dừng thu' : '● Thu âm') + '</button></div>';
+  o += '<div class="hang mo" style="gap:10px;margin:6px 0 0"><span>🖼 Ảnh chat</span><span>🎧 Ghi âm</span><span>🎬 Video</span><span>📄 PDF</span><span>📝 Word, chữ</span></div>';
+  if (REC) o += '<p class="thieu">Đang thu… bấm Dừng thu khi xong.</p>';
+  o += '<p id="rv-doc" class="thieu" style="' + (DOC.tin ? '' : 'display:none') + '">' + esc(DOC.tin) + '</p>';
+  if (R.tuLieu && R.tuLieu.length) o += '<div class="mo" style="margin-top:6px">Đã đọc: ' + R.tuLieu.map(function (t) { return esc(t.ten) + (t.loi ? ' (chưa đọc được)' : ''); }).join(' · ') + '</div>';
+  if (AU_URL) o += (R.audio.video ? '<video controls playsinline src="' + AU_URL + '" style="width:100%;border-radius:12px;background:#000;margin-top:8px"></video>' : '<audio controls src="' + AU_URL + '" style="margin-top:8px"></audio>') + '<div class="mo">' + esc(R.audio.ten) + ' · ' + (R.audio.kb > 2048 ? Math.round(R.audio.kb / 1024) + ' MB' : R.audio.kb + ' KB') + '</div><button class="chip" onclick="chepLoiBanThu()">📝 Chép lời file này</button>';
+  else if (R.audio) o += '<p class="mo">Đã có file: ' + esc(R.audio.ten) + '. Chọn file khác nếu muốn thay.</p>';
+  o += '<details class="mo" style="margin-top:6px"><summary>Lấy file từ Drive, lần đầu chép lời</summary><p style="margin:4px 0">Bấm 📎 sẽ hiện bảng chọn của điện thoại: Tệp, Thư viện ảnh, và Google Drive nếu máy có cài app Drive. iPhone: trong Tệp bấm Duyệt › Drive. Android: bấm ☰ chọn Drive.</p><p style="margin:4px 0">Lần đầu chép lời, app tải bộ nghe tiếng Việt khoảng 80MB (cần Wi-Fi), sau đó chạy không cần mạng. Chép lời mất chừng bằng độ dài file, cứ để app mở. Ảnh chat: bong bóng trái là Khách, phải là Mình.</p></details></div>';
+  return o;
+}
+
 // ================= GIAO DIỆN =================
 (function () {
-  var goc = V.suaReview;
-  V.suaReview = function () {
-    var h = goc();
-    var o = '<div class="the" style="border-color:var(--kim)"><b>📎 Tải tư liệu buổi gặp cho app đọc</b><p class="mo" style="margin:4px 0 8px">Ảnh chụp chat, ghi âm, video, PDF, Word, file chữ. Chọn được nhiều file một lần. App đọc hết chữ ngay trên máy, chép lời ghi âm, rồi ở Phần 3 chấm sát từng nan và viết kịch bản mài rìu.</p>';
-    o += '<label class="nut rong" style="margin:0">📎 Chọn tư liệu<input type="file" class="an" multiple accept="image/*,audio/*,video/*,.pdf,.docx,.doc,.txt,.md,.srt,.vtt,.m4a,.mp3,.wav,.aac,.ogg,.opus,.amr,.mp4,.mov,.m4v,.webm,application/pdf" onchange="docTuLieu(this.files)"></label>';
-    o += '<div class="hang mo" style="gap:10px;margin:6px 0 0"><span>🖼 Ảnh chat</span><span>🎧 Ghi âm</span><span>🎬 Video</span><span>📄 PDF</span><span>📝 Word, chữ</span></div>';
-    o += '<p id="rv-doc" class="thieu" style="' + (DOC.tin ? '' : 'display:none') + '">' + esc(DOC.tin) + '</p>';
-    if (R.tuLieu && R.tuLieu.length) o += '<div class="mo" style="margin-top:6px">Đã đọc: ' + R.tuLieu.map(function (t) { return esc(t.ten) + (t.loi ? ' (chưa đọc được)' : ''); }).join(' · ') + '</div>';
-    o += '<p class="mo" style="margin:6px 0 0">Lần đầu chép lời ghi âm, app tải bộ nghe tiếng Việt khoảng 80MB (cần Wi-Fi), sau đó chạy không cần mạng. Chép lời mất chừng bằng độ dài file, cứ để app mở. Ảnh chat: bong bóng trái là Khách, phải là Mình.</p></div>';
-    h = h.replace('<label>Kể lại buổi gặp</label>', o + '<label>Kể lại buổi gặp</label>');
-    h = h.replace('onchange="chonAudio(this.files[0])"', 'onchange="docTuLieu(this.files)"').replace('onchange="chonAnh(this.files)"', 'onchange="docTuLieu(this.files)"');
-    if (AU_URL) h = h.replace(/(<div class="mo">[^<]*· [\d.]+ (?:MB|KB)<\/div>)/, '$1<button class="chip" onclick="chepLoiBanThu()">📝 Chép lời file này vào ô bản chép lời</button>');
-    return h;
-  };
-  var gocKB = htmlKichBan;
-  htmlKichBan = function (r) {
-    var co = chamSau(r).co;
-    return '<details class="the"' + (co ? '' : ' open') + '><summary><b>📚 Kịch bản mẫu chung A, B</b> <span class="mo">(ca ví dụ mẹ bé, rau, Umikai: để tập kỹ năng, không phải ca của bạn)</span></summary>' + gocKB(r) + '</details>';
-  };
   var gocV = V.review;
   V.review = function (p) {
     if (p[1] === 'tapm') {

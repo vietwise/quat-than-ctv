@@ -44,21 +44,7 @@ function danhGia(r) {
   }
   return kq;
 }
-function htmlDanhGia(r) {
-  var kq = danhGia(r);
-  var h = '<h3>Phần 3 · App đánh giá</h3>';
-  if (!kq.co) return h + '<div class="the mo">Chưa có lời kể, đoạn chat hay bản chép lời để app soi. Bấm Sửa, thêm vào Phần 1 nhé.</div>';
-  h += '<div class="the"><div class="hang" style="align-items:center"><div class="diem-ap"><b>' + kq.thay + '</b>/9</div><div style="flex:1">nan có dấu hiệu trong lời kể · ' + kq.hoi + ' câu hỏi · ' + kq.soCau + ' câu</div></div>';
-  h += '<div class="ds" style="margin-top:8px">' + NAN.map(function (b) { var x = kq.nan[b.n]; return '<div class="muc" style="padding:8px 0"><span class="so' + (b.guong.do ? ' do' : '') + '">' + b.n + '</span><div class="y"><div>' + esc(b.ten) + ' <span class="' + (x ? 'tot-c' : 'chua-c') + '">' + (x ? '✓ thấy' : '○ chưa thấy') + '</span></div>' + (x && x.i < 999 ? '<div class="mo">“' + esc(x.cau.slice(0, 140)) + '”</div>' : '') + '</div></div>'; }).join('') + '</div></div>';
-  kq.ghiChu.forEach(function (g) { h += '<div class="' + (g[0] === 'tot' ? 'on-ok' : g[0] === 'canh' ? 'canh' : 'the mo') + '">' + esc(g[1]) + '</div>'; });
-  if (kq.lech.length) h += '<div class="the"><b>So với bạn tự đánh giá</b><ul>' + kq.lech.map(function (x) { return '<li>Nan ' + x[0] + ': ' + esc(x[1]) + '</li>'; }).join('') + '</ul></div>';
-  h += '<p class="mo">App soi bằng từ khoá, chỉ là gợi ý.</p><button class="chip" onclick="chep(yeuCauAIReview(\'' + r.id + '\'))">Sao chép yêu cầu nhờ trợ lý AI đánh giá</button>';
-  return h;
-}
-function yeuCauAIReview(id) {
-  var r = S.review.filter(function (x) { return x.id === id; })[0];
-  return 'Tôi là cộng tác viên Siêu thị Vietwise, đang tập phương pháp Quạt Thần (Action Selling 9 bước: 1 Mục tiêu cam kết, 2 Kết nối, 3 Đặt câu hỏi hay, 4 Thống nhất nhu cầu và nâng cảm xúc, 5 Giới thiệu thương hiệu, 6 Giới thiệu sản phẩm theo TFBR, 7 Chốt, 8 Sau mua, 9 Review). Dưới đây là lời kể, đoạn chat hoặc bản chép lời một buổi tư vấn khách. Hãy chấm từng bước (làm tốt, chưa tốt, bỏ qua), trích câu làm bằng chứng, chỉ ra chỗ nhảy bước, chỉ ra lời hứa công dụng hay lời ép mua nếu có, và viết lại 3 câu tôi nên nói khác đi. Không bịa thêm lời khách.\n\n---\n' + nguonReview(r) + (r.nguyenVan ? '\nKhách nói nguyên văn: ' + r.nguyenVan : '');
-}
+// htmlDanhGia, yeuCauAIReview: bản chấm sát từng nan nằm ở review-sau.js.
 
 // ---------- Phần 3 · Kịch bản đóng kịch ----------
 var KHACH_DAP = {
