@@ -546,9 +546,9 @@ function phan(k, i) {
     h += '<div class="hang"><input id="nc-' + id + '" placeholder="Ví dụ: muốn bữa cơm cả nhà yên tâm hơn" style="flex:1"><button class="nut nho" onclick="themNhuCau(\'' + id + '\')">Thêm</button></div>';
     h += '<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" style="width:auto" ' + (k.dongY ? 'checked' : '') + ' onchange="dat(\'' + id + '\',\'dongY\',this.checked);render()"> Mình đã tóm lại và khách nói “đúng”</label>';
     h += '<label>Mức quan tâm của khách (thang 10)</label><div class="lua"><input type="range" min="0" max="10" value="' + (k.quanTam == null ? 5 : k.quanTam) + '" oninput="dat(\'' + id + '\',\'quanTam\',+this.value);this.nextElementSibling.textContent=this.value"><b>' + (k.quanTam == null ? 5 : k.quanTam) + '</b></div>';
-    h += '<label>Câu “Nếu được… thì…”</label>' + o(id, 'neuDuoc', k.neuDuoc, 'Nếu mỗi bữa cơm chị đều yên tâm, chị thấy thế nào?', 2) + '<div id="k-neuDuoc">' + htmlKiem(k.neuDuoc) + '</div>';
-    h += '<label>Câu “Nếu không được thì…”</label>' + o(id, 'neuKhong', k.neuKhong, 'Nếu cứ như bây giờ thêm vài năm, chị nghĩ sẽ ra sao?', 2) + '<div id="k-neuKhong">' + htmlKiem(k.neuKhong) + '</div>';
-    h += '<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" style="width:auto" ' + (k.phepMe ? 'checked' : '') + ' onchange="dat(\'' + id + '\',\'phepMe\',this.checked)"> Hai câu này mình dám nói với mẹ mình</label>';
+    h += '<label>4b · Câu viễn cảnh tránh xa (hỏi trước)</label>' + o(id, 'neuKhong', k.neuKhong, 'Nếu cứ như bây giờ thêm vài năm, chị nghĩ sẽ ra sao?', 2) + '<div id="k-neuKhong">' + htmlKiem(k.neuKhong) + '</div>';
+    h += '<label>4b · Câu viễn cảnh hướng tới (hỏi sau)</label>' + o(id, 'neuDuoc', k.neuDuoc, 'Nếu mỗi bữa cơm chị đều yên tâm, chị thấy thế nào?', 2) + '<div id="k-neuDuoc">' + htmlKiem(k.neuDuoc) + '</div>';
+    h += '<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" style="width:auto" ' + (k.phepMe ? 'checked' : '') + ' onchange="dat(\'' + id + '\',\'phepMe\',this.checked)"> Hai câu này chạm đúng điều khách quan tâm, không dọa, không ép</label>';
     h += '<p class="mo">Hỏi xong thì im lặng một nhịp. Chưa đưa thêm thông tin.</p>';
   }
   if (i === 5) {
